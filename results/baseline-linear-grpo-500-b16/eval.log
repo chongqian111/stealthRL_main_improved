@@ -1,0 +1,199 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+=================================================================
+加载数据集
+=================================================================
+
+[数据集1] MAGE test split...
+  AI: 200 条 | 人类: 200 条
+
+[数据集2] UCAS val.csv...
+  AI: 200 条 | 人类: 200 条
+
+=================================================================
+加载检测器
+=================================================================
+
+[1/4] RoBERTa（训练集成）...
+Loading weights:   0%|          | 0/393 [00:00<?, ?it/s]Loading weights:  38%|███▊      | 150/393 [00:00<00:00, 1495.31it/s]Loading weights:  88%|████████▊ | 345/393 [00:00<00:00, 1761.36it/s]Loading weights: 100%|██████████| 393/393 [00:00<00:00, 1860.06it/s]
+[1mRobertaForSequenceClassification LOAD REPORT[0m from: openai-community/roberta-large-openai-detector
+Key                         | Status     |  | 
+----------------------------+------------+--+-
+roberta.pooler.dense.weight | UNEXPECTED |  | 
+roberta.pooler.dense.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+  ✅ RoBERTa 加载完成
+
+[2/4] Fast-DetectGPT（训练集成）...
+Loading weights:   0%|          | 0/420 [00:00<?, ?it/s]Loading weights:   6%|▌         | 24/420 [00:00<00:01, 239.02it/s]Loading weights:  12%|█▏        | 50/420 [00:00<00:01, 250.94it/s]Loading weights:  18%|█▊        | 76/420 [00:00<00:01, 253.90it/s]Loading weights:  25%|██▍       | 104/420 [00:00<00:01, 259.72it/s]Loading weights:  31%|███       | 130/420 [00:00<00:01, 258.93it/s]Loading weights:  37%|███▋      | 156/420 [00:00<00:01, 258.03it/s]Loading weights:  46%|████▌     | 193/420 [00:00<00:00, 273.69it/s]Loading weights:  53%|█████▎    | 221/420 [00:00<00:00, 262.73it/s]Loading weights:  61%|██████▏   | 258/420 [00:01<00:00, 248.43it/s]Loading weights:  71%|███████   | 297/420 [00:01<00:00, 272.57it/s]Loading weights:  77%|███████▋  | 325/420 [00:01<00:00, 265.00it/s]Loading weights:  84%|████████▍ | 352/420 [00:01<00:00, 261.45it/s]Loading weights:  90%|█████████ | 379/420 [00:01<00:00, 259.83it/s]Loading weights:  99%|█████████▊| 414/420 [00:01<00:00, 249.33it/s]Loading weights: 100%|██████████| 420/420 [00:01<00:00, 249.20it/s]
+[1mGPTNeoForCausalLM LOAD REPORT[0m from: EleutherAI/gpt-neo-2.7B
+Key                                               | Status     |  | 
+--------------------------------------------------+------------+--+-
+transformer.h.{0...31}.attn.attention.masked_bias | UNEXPECTED |  | 
+transformer.h.{0...30}.attn.attention.bias        | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+  ✅ EleutherAI/gpt-neo-2.7B 加载完成
+
+[3/4] Binoculars（held-out 检测器）...
+Loading weights:   0%|          | 0/292 [00:00<?, ?it/s]Loading weights:  74%|███████▎  | 215/292 [00:00<00:00, 1426.23it/s]Loading weights: 100%|██████████| 292/292 [00:00<00:00, 1661.05it/s]
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:  24%|██▍       | 106/436 [00:00<00:00, 934.10it/s]Loading weights:  48%|████▊     | 208/436 [00:00<00:00, 975.88it/s]Loading weights:  70%|███████   | 306/436 [00:00<00:00, 961.72it/s]Loading weights:  92%|█████████▏| 403/436 [00:00<00:00, 935.60it/s]Loading weights: 100%|██████████| 436/436 [00:00<00:00, 843.99it/s]
+  ✅ Binoculars (gpt2-medium + gpt2-large) 加载完成
+
+[4/4] MAGE detector（held-out 检测器）...
+Loading weights:   0%|          | 0/273 [00:00<?, ?it/s]Loading weights: 100%|██████████| 273/273 [00:00<00:00, 40692.46it/s]
+  ✅ MAGE detector 加载完成
+
+共加载 4 个检测器: ['RoBERTa', 'Fast-DetectGPT', 'Binoculars', 'MAGE']
+
+加载 E5 语义相似度模型...
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 9419.39it/s]
+[1mBertModel LOAD REPORT[0m from: intfloat/e5-large-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+`loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.
+Initializing global attention on CLS token...
+Input ids are automatically padded to be a multiple of `config.attention_window`: 512
+
+=================================================================
+计算基线（原始 AI 文本，无攻击）
+=================================================================
+
+  RoBERTa...
+    MAGE test: AUROC=0.7521  ASR@1%=0.9400
+    UCAS val:  AUROC=0.8709  ASR@1%=0.5300
+
+  Fast-DetectGPT...
+    MAGE test: AUROC=0.4124  ASR@1%=0.9450
+    UCAS val:  AUROC=0.8747  ASR@1%=0.9800
+
+  Binoculars...
+    MAGE test: AUROC=0.5533  ASR@1%=0.9100
+    UCAS val:  AUROC=0.4186  ASR@1%=0.9950
+
+  MAGE...
+    MAGE test: AUROC=0.9898  ASR@1%=0.2000
+    UCAS val:  AUROC=0.9020  ASR@1%=0.5750
+
+=================================================================
+加载 StealthRL 模型
+=================================================================
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  28%|██▊       | 81/290 [00:00<00:00, 809.18it/s]Loading weights:  80%|███████▉  | 231/290 [00:00<00:00, 1213.75it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1215.25it/s]
+  ✅ 模型加载完成: /data/stealthRL_main_improved/StealthRL-main/StealthRL-main/checkpoints/baseline-linear-grpo-500-b16
+
+生成 MAGE test 改写文本...
+  进度: 4/200
+  进度: 104/200
+  E5 语义相似度: 0.9879
+
+生成 UCAS val 改写文本...
+  进度: 4/200
+  进度: 104/200
+  E5 语义相似度: 0.9344
+
+计算攻击后得分...
+
+=================================================================
+最终评估结果（对齐论文 Table 2/3 格式）
+=================================================================
+
+【训练集成检测器：RoBERTa + Fast-DetectGPT】
+【Held-out 检测器：Binoculars + MAGE（测试迁移效果）】
+
+─────────────────────────────────────────────────────────────────
+  数据集：MAGE test split
+─────────────────────────────────────────────────────────────────
+
+    ── RoBERTa ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.7521     0.8153     +0.0632
+    TPR@1%FPR      0.0600     0.0300     -0.0300
+    ASR@1%FPR      0.9400     0.9700     +0.0300
+    TPR@5%FPR      0.1750     0.1000     -0.0750
+    ASR@5%FPR      0.8250     0.9000     +0.0750
+
+    ── Fast-DetectGPT ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.4124     0.9723     +0.5599
+    TPR@1%FPR      0.0550     0.9350     +0.8800
+    ASR@1%FPR      0.9450     0.0650     -0.8800
+    TPR@5%FPR      0.0950     0.9500     +0.8550
+    ASR@5%FPR      0.9050     0.0500     -0.8550
+
+    ── Binoculars ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.5533     0.9340     +0.3808
+    TPR@1%FPR      0.0900     0.1950     +0.1050
+    ASR@1%FPR      0.9100     0.8050     -0.1050
+    TPR@5%FPR      0.1550     0.7100     +0.5550
+    ASR@5%FPR      0.8450     0.2900     -0.5550
+
+    ── MAGE ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.9898     0.9957     +0.0059
+    TPR@1%FPR      0.8000     1.0000     +0.2000
+    ASR@1%FPR      0.2000     0.0000     -0.2000
+    TPR@5%FPR      0.9800     1.0000     +0.0200
+    ASR@5%FPR      0.0200     0.0000     -0.0200
+
+─────────────────────────────────────────────────────────────────
+  数据集：UCAS val.csv
+─────────────────────────────────────────────────────────────────
+
+    ── RoBERTa ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.8709     0.7858     -0.0851
+    TPR@1%FPR      0.4700     0.2350     -0.2350
+    ASR@1%FPR      0.5300     0.7650     +0.2350
+    TPR@5%FPR      0.5750     0.3350     -0.2400
+    ASR@5%FPR      0.4250     0.6650     +0.2400
+
+    ── Fast-DetectGPT ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.8747     0.9031     +0.0284
+    TPR@1%FPR      0.0200     0.3900     +0.3700
+    ASR@1%FPR      0.9800     0.6100     -0.3700
+    TPR@5%FPR      0.1050     0.5200     +0.4150
+    ASR@5%FPR      0.8950     0.4800     -0.4150
+
+    ── Binoculars ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.4186     0.7171     +0.2985
+    TPR@1%FPR      0.0050     0.0100     +0.0050
+    ASR@1%FPR      0.9950     0.9900     -0.0050
+    TPR@5%FPR      0.0150     0.1550     +0.1400
+    ASR@5%FPR      0.9850     0.8450     -0.1400
+
+    ── MAGE ──
+    指标             基线         攻击后        变化
+    --------------------------------------------
+    AUROC          0.9020     0.9341     +0.0322
+    TPR@1%FPR      0.4250     0.3150     -0.1100
+    ASR@1%FPR      0.5750     0.6850     +0.1100
+    TPR@5%FPR      0.7450     0.7950     +0.0500
+    ASR@5%FPR      0.2550     0.2050     -0.0500
+
+─────────────────────────────────────────────────────────────────
+  语义相似度（E5）
+─────────────────────────────────────────────────────────────────
+    MAGE test: 0.9879
+    UCAS val:  0.9344
+
+=================================================================
+AUROC 越低、ASR 越高 = 攻击越成功
+Binoculars/MAGE 下降 = 攻击能迁移到未见过的检测器
+
+完整结果已保存: results/eval_results_full.json

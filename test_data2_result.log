@@ -1,0 +1,60 @@
+============================================================
+读取 data2.xlsx...
+  总行数: 10004
+  AI(0): 5067  人类(1): 4937
+
+  训练集: 8003 条  (AI=4053, 人类=3950)
+  测试集: 2001  条  (AI=1014, 人类=987)
+
+============================================================
+加载 RoBERTa...
+Loading weights:   0%|          | 0/393 [00:00<?, ?it/s]Loading weights: 100%|██████████| 393/393 [00:00<00:00, 8905.63it/s]
+[1mRobertaForSequenceClassification LOAD REPORT[0m from: openai-community/roberta-large-openai-detector
+Key                         | Status     |  | 
+----------------------------+------------+--+-
+roberta.pooler.dense.weight | UNEXPECTED |  | 
+roberta.pooler.dense.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+`torch_dtype` is deprecated! Use `dtype` instead!
+  ✅ RoBERTa 加载完成
+
+加载 Fast-DetectGPT (gpt-neo-2.7B)...
+Loading weights:   0%|          | 0/420 [00:00<?, ?it/s]Loading weights:   9%|▉         | 37/420 [00:00<00:01, 326.80it/s]Loading weights:  17%|█▋        | 70/420 [00:00<00:01, 228.90it/s]Loading weights:  24%|██▍       | 102/420 [00:00<00:01, 243.64it/s]Loading weights:  30%|███       | 128/420 [00:00<00:01, 244.99it/s]Loading weights:  38%|███▊      | 160/420 [00:00<00:00, 268.35it/s]Loading weights:  45%|████▍     | 188/420 [00:00<00:00, 267.33it/s]Loading weights:  52%|█████▏    | 218/420 [00:00<00:00, 269.64it/s]Loading weights:  59%|█████▊    | 246/420 [00:00<00:00, 234.47it/s]Loading weights:  65%|██████▌   | 273/420 [00:01<00:00, 237.96it/s]Loading weights:  74%|███████▍  | 310/420 [00:01<00:00, 262.09it/s]Loading weights:  80%|████████  | 337/420 [00:01<00:00, 264.17it/s]Loading weights:  87%|████████▋ | 364/420 [00:01<00:00, 261.67it/s]Loading weights:  93%|█████████▎| 391/420 [00:01<00:00, 258.46it/s]Loading weights: 100%|█████████▉| 418/420 [00:01<00:00, 190.52it/s]Loading weights: 100%|██████████| 420/420 [00:01<00:00, 229.66it/s]
+[1mGPTNeoForCausalLM LOAD REPORT[0m from: EleutherAI/gpt-neo-2.7B
+Key                                               | Status     |  | 
+--------------------------------------------------+------------+--+-
+transformer.h.{0...30}.attn.attention.bias        | UNEXPECTED |  | 
+transformer.h.{0...31}.attn.attention.masked_bias | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+You seem to be using the pipelines sequentially on GPU. In order to maximize efficiency please use a dataset
+  ✅ Fast-DetectGPT 加载完成
+
+============================================================
+评估 RoBERTa（负loss版 Fast-DetectGPT）
+============================================================
+
+  [训练集(80%)] 评估 600 条（AI=300, 人类=300）
+    RoBERTa      AUROC=0.5319  ✅ 方向正确
+    Fast-DGPT    AUROC=0.5095  ⚠️ 方向翻转
+
+  [测试集(20%)] 评估 600 条（AI=300, 人类=300）
+    RoBERTa      AUROC=0.5323  ⚠️ 方向翻转
+    Fast-DGPT    AUROC=0.5634  ⚠️ 方向翻转
+
+============================================================
+评估 Fast-DetectGPT 条件熵版（对比）
+============================================================
+
+  [训练集(80%)] Fast-DGPT 条件熵: AUROC=0.5403  ✅ 方向正确
+
+  [测试集(20%)] Fast-DGPT 条件熵: AUROC=0.5282  ⚠️ 方向翻转
+
+============================================================
+结论：
+  AUROC > 0.7 且方向正确 → 该检测器适合作为该数据集的训练信号
+  AUROC < 0.6 或方向翻转 → 不可靠，建议换检测器或数据集
+============================================================

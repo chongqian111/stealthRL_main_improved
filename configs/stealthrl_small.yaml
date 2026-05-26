@@ -1,0 +1,62 @@
+# StealthRL Training Configuration - Small Model
+# With refined reward normalization for stable GRPO/PPO training
+model:
+  base_model: "/data/StealthRL-main/StealthRL-main/Qwen2.5-0.5B-Instruct"  # ← 改为本地路径
+  lora_rank: 8        # ← 从16降到8，0.5B模型够用，省显存
+  lora_alpha: 16      # ← 对应调整，保持 alpha = 2×rank
+  lora_dropout: 0.05
+  trust_remote_code: true          # ← 新增，加载本地模型需要
+  use_flash_attention: false       # ← 新增，Windows必须关闭
+  attn_implementation: "eager"     # ← 新增，用标准attention
+
+training:
+  algorithm: "grpo"
+  learning_rate: 1.0e-5
+  batch_size: 4          # ← 从8降到2，0.5B测试阶段先用小batch
+  gradient_accumulation_steps: 4
+  max_steps: 5000        # ← 从10000降到100，先跑通pipeline再说
+  warmup_steps: 200       # ← 对应调整
+  eval_steps: 500         # ← 对应调整
+  save_steps: 1000        # ← 对应调整
+  logging_steps: 20
+  max_grad_norm: 1.0
+
+trainer:
+  kl_beta: 0.001
+
+reward:
+  detectors:
+    - "roberta-base-openai-detector"   # ← 先只用这一个，最轻量
+    # - "fast-detectgpt"               # ← 注释掉，需要额外scoring模型
+  
+  detector_weight: 1.0
+  semantic_weight: 1.0
+  quality_weight: 0.5
+  fairness_weight: 0.2
+  
+  semantic_metric: "bertscore"
+  
+  normalize_terms: true
+  detector_zscore: true
+  semantic_min: 0.85        # ← 从0.90稍微放宽，0.5B改写质量有限
+  quality_min: 0.70         # ← 从0.80放宽，同上原因
+  
+  fairness_mode: "esl_penalty"
+
+quality:
+  perplexity_min: 5.0
+  perplexity_max: 80.0
+  readability_min: 0.0
+  readability_max: 100.0
+  quality_balance: 0.5
+
+data:
+  train_dataset: "data/processed/train.jsonl"
+  eval_dataset: "data/processed/eval.jsonl"
+  esl_validation: "data/processed/esl_validation.jsonl"
+  native_validation: "data/processed/native_validation.jsonl"
+  max_length: 256       # ← 从512降到256，0.5B超过256效果会明显变差
+
+output:
+  output_dir: "checkpoints/stealthrl-small"
+  logging_dir: "logs/stealthrl-small"
